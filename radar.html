@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Canvas绘制雷达图</title>
+  <style>
+    body,
+    html,
+    div {
+      margin: 0;
+      padding: 0;
+    }
+    
+    .container {
+      width: 300px;
+      height: 300px;
+      margin: 50px auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" id="container">
+    <canvas id="canvas"></canvas>
+  </div>
+</body>
+
+<script type="text/javascript">
+  let canvas = document.getElementById("canvas")
+  let ctx = canvas.getContext("2d")
+  let data = [
+    ["HTML", 0.5],
+    ["CSS", 0.6],
+    ["JS", 0.4],
+    ["jQuery", 0.8],
+    ["React", 0.7]
+  ]
+  let step = data.length; //n边形
+  let r = 150; //圆形半径
+  let rad = 2 * Math.PI / step //圆心角均为rad 
+
+  //style 改变width,height 只改变画板宽高，而画布宽高不变，并且会根据画板的宽高进行拉伸或者压缩
+  //canvas的width,height 改变画板和画布的宽高，所以不会变形
+  canvas.width = 300
+  canvas.height = 300
+
+  //绘制网格背景
+  let isBlue = false
+
+  for (let s = 10; s > 0; s--) { //网格，s个n边形
+    ctx.beginPath();
+    for (let i = 0; i < step; i++) {
+      let x = r + Math.sin(rad * i) * r * (s / 10) //根据rad圆心角，计算出各顶点x坐标
+      let y = r + Math.cos(rad * i) * r * (s / 10) //根据rad圆心角，计算出各顶点y坐标
+
+      ctx.lineTo(x, y)
+    }
+    ctx.closePath()
+    ctx.fillStyle = (isBlue = !isBlue) ? '#99c0ff' : '#f1f9ff'
+    ctx.fill()
+  }
+
+  //绘制伞骨
+  ctx.beginPath()
+  for (let i = 0; i < step; i++) {
+    let x = r + Math.sin(rad * i) * r
+    let y = r + Math.cos(rad * i) * r
+
+    ctx.moveTo(r, r)
+    ctx.lineTo(x, y)
+  }
+  ctx.strokeStyle = "#e0e0e0"
+  ctx.stroke()
+
+  //绘制数据点
+  ctx.fillStyle = "#ff7676";
+  for (let i = 0; i < step; i++) {
+    let x = r + Math.sin(rad * i) * r * data[i][1]
+    let y = r + Math.cos(rad * i) * r * data[i][1]
+
+    ctx.beginPath()
+    ctx.arc(x, y, 4, 0, 2 * Math.PI)
+    ctx.fill()
+  }
+
+  //绘制折线
+  ctx.fillStyle = "rgba(0,255,0,0.5)"
+  ctx.beginPath()
+  for (let i = 0; i < step; i++) {
+    let x = r + Math.sin(rad * i) * r * data[i][1]
+    let y = r + Math.cos(rad * i) * r * data[i][1]
+
+    ctx.lineTo(x, y)
+  }
+  ctx.closePath()
+  ctx.fill()
+</script>
+
+</html>
